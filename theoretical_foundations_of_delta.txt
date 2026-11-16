@@ -1,0 +1,162 @@
+Main theoretical backing of the Δ equation and methods: 
+
+The measure. For observables X1, ..., Xn and a candidate shared variable
+α, define
+
+    Δ(α) = Σ_i K(X_i) − (K(α) + Σ_i K(X_i | α)).
+
+Δ is the number of bits saved by describing the observables jointly through
+a shared variable, rather than describing each one separately. It is
+positive when α captures real shared structure, zero when α explains
+nothing, and negative when the cost of α exceeds what it explains. The
+equation itself is our construction. What follows is the sense in which it
+synthesizes three established results: none of the three sources states Δ;
+each supplies one of its components. Throughout, =+ denotes equality up to
+an additive constant, and ≈ equality up to an additive O(log) term,
+following the conventions of [1, 2].
+
+
+1. Gács & Körner (1973): the three-part code
+
+In the introduction of [1] (p. 149), Gács and Körner pose the problem that
+motivates common information: given two sources ξ and η, find "a code
+consisting of three parts: A, B and C where ξ can be decoded from A and C,
+while η can be decoded if B and C are known. We shall call such a code a
+Y-scheme." The shared part C is the common code; A and B are the private
+residuals. Δ is the n-variable algorithmic form of this architecture: α
+plays the role of C, and K(X_i | α) the role of the private parts.
+
+In §6, "The complexity interpretation of the result" (pp. 160–161), they
+translate the question into Kolmogorov complexity. With T a universal
+Turing machine and Λ the empty input, they ask whether there is a triple
+a, b, c of programs with
+
+    T(ca, Λ) = x,   T(cb, Λ) = y,
+    l(a) ≈ K(x | y),   l(b) ≈ K(y | x),   l(c) ≈ I(x : y).
+
+Two things matter for an honest citation. First, the triple is posed as a
+question, and the section's answer is negative: defining J(x, y) = max K(z)
+over z with K(z | x) ≈ 0 and K(z | y) ≈ 0, they show J(x, y) is in general
+far less than I(x:y) — common information is far less than mutual
+information, as the title says. Second, the residual lengths in the paper
+are K(x | y) and K(y | x), not K(X_1 | α) and K(X_2 | α). The step from the
+paper's question to Δ is ours: given a candidate common program c, the
+residuals cost K(X_1 | c) and K(X_2 | c), and Δ is the savings over
+separate description. Gács–Körner supply the architecture and the warning —
+a shared code need not exist, and when it does it may be far smaller than
+the mutual information — not the formula.
+
+
+2. Gács, Tromp & Vitányi (2001): the two-part code
+
+[2] formalizes the two-part code for data x and a model S (a finite set)
+or P (a computable distribution):
+
+    K(x) ≤ K(x, S) =+ K(S) + K(x | S*) <+ K(S) + log |S|    (III.3)
+
+    K(x) ≤ K(x, P) =+ K(P) + K(x | P*) <+ K(P) − log P(x)    (V.3)
+
+A model is optimal when equality holds — K(x) =+ K(S) + log |S| (III.4) or
+K(x) =+ K(P) − log P(x) (V.4) — and the shortest program for an optimal
+model is an algorithmic sufficient statistic for x. This is the ideal
+minimum-description-length (MDL) principle: select the hypothesis
+minimizing the description of the hypothesis plus the description of the
+data given the hypothesis.
+
+Δ is this two-part code with the model α shared across n observables: the
+model code is K(α) and the data-to-model code is K(X_1, ..., X_n | α). The
+remaining step — factoring the data-to-model code as Σ_i K(X_i | α) — is
+ours, justified by the chain rule for prefix complexity: when the
+components are conditionally independent given α, K(X_1, ..., X_n | α) =+
+Σ_i K(X_i | α) up to logarithmic terms. The baseline Σ_i K(X_i) is the
+unorganized code: each observable described separately, with no shared
+model. Δ is therefore the two-part gain of the shared model over no model
+at all, maximized by the model minimizing the two-part length K(α) +
+Σ_i K(X_i | α) — the ideal-MDL model.
+
+
+3. Janzing & Schölkopf (2010): the causal reading
+
+[3] postulates the algorithmic Markov condition: for observations x_1,
+..., x_n with causal graph G,
+
+    K(x_1, ..., x_n) =+ Σ_j K(x_j | pa_j*),
+
+where pa_j are the parents of x_j in G — the algorithmic analogue of
+Reichenbach's common-cause principle, with conditional stochastic
+independence replaced by vanishing conditional algorithmic mutual
+information. (It is a postulate of the framework, Postulate 5, not a
+derived theorem.) For a common cause α — the fork X_i ← α → X_j — the
+condition gives
+
+    K(X_1, ..., X_n) =+ K(α) + Σ_i K(X_i | α).
+
+This fixes the meaning of Δ: by the chain rule, K(α) + Σ_i K(X_i | α) ≥+
+K(X_1, ..., X_n) always, so
+
+    Δ(α) ≤+ Σ_i K(X_i) − K(X_1, ..., X_n),
+
+with equality exactly when α is sufficient, i.e. when the two-part code
+achieves the joint complexity. The right-hand side is the total algorithmic
+redundancy of the observables; Δ is the part of it that α explains. Note Δ(α) is a property of a candidate α, not a maximum over α: the empirical claim of the project is that a simple learned α attains large out-of-regime transfer Δ on biological networks and not on topology-preserving rate-randomized controls, which is a claim about the data, not a consequence of the condition.
+
+Because [3] requires the conditional mechanisms K(X_i | α) to be algorithmically independent of the process generating α, freezing α and its conditional codes on training data and evaluating Δ(α) under an out-of-regime amplitude shift (test B1) directly tests causal invariance—separating a genuine structural common cause that holds across interventions from an in-regime curve fit that collapses when the driving stimulus changes.
+
+
+Synthesis
+
+The three sources give Δ its three faces: the code architecture
+(Gács–Körner), the model-selection principle (ideal MDL), and the causal
+interpretation (the algorithmic Markov condition). It is a single quantity
+with three readings, which is why it can serve as a measure of common
+information that is at once a compression gain, a sufficient statistic's
+explanatory power, and a common cause's footprint.
+
+
+Some extra details:
+
+Δ as stated uses true Kolmogorov complexity and is uncomputable; the
+empirical companion to this note estimates it with binned-entropy plug-in
+codes on train/test splits. Δ(α) is defined for a candidate α; the
+reported numbers use a learned α̂ (first SVD direction, fitted on Train
+only). Because you cannot compute true Kolmogorov complexity directly, freezing the SVD direction w, bin edges, and conditional histograms on Train A (u=3.5) and testing them on a shifted amplitude regime Test B1 (u=1.2) acts as an empirical substitute for algorithmic sufficiency. A genuine internal program continues to compress the new regime (13.097 bits for biology), whereas a brittle Shannon lookup table fails when the input amplitude shifts (dropping randomized twins that beat biology down to 1/64 shuffled and 3/64 uniform).   
+
+By Sula & Gastpar (2021), the optimal extraction of relaxed Wyner common information for Gaussian statistics is exactly CCA, computed via SVD. We use the top SVD axis of the joint training data as our estimate of the shared continuous source, and validate it by held-out MDL transfer [4].
+
+Note on identifiability: Δ(α) is well-defined for any candidate α and any dataset. But when α is learned, α̂ = α̂(X_train), evaluating Δ(α̂) on X_train gives a biased estimate of the source's common information: α̂ was selected using that very data, so the in-sample value is optimistically biased. The train/test split is therefore definitional, not merely hygienic — Δ(α̂) on held-out data is the estimate, because α̂ was frozen before that data was seen. The transfer test extends the same logic across regimes: the new regimes are draws from a changed source, and the topology-preserving control ensembles supply the null distribution for the statistic.
+
+Background: The Δ equation at the center of this repository — Δ = ΣK(Xi) − (K(α) + ΣK(Xi|α)) — was made to model the morphogenetic field, following Michael Levin's research on bioelectric patterning and morphogenesis, using Chaitin's algorithmic-information-theoretic definition of life (Chaitin 1979). Δ quantifies that unity: the compression gained by describing the parts through a shared variable α. The equation predates the gene-network work here. The specific test — measuring Δ on gene regulatory networks against randomized controls — was inspired by Levin's work, in particular Pigozzi, Goldstein & Levin (2025), whose models this repository builds on.
+
+
+Randomization: 
+
+Shuffled-rate twins: rng.permutation(CHO_K) keeps the exact biological numbers (preserving the spread of fast and slow rates) but assigns them to the wrong reactions.   
+
+Uniform-rate twins: rng.uniform(0.001, 1.0, 11) erases the biological rate distribution entirely, replacing all 11 constants with flat random draws between 0.001 and 1.0.  
+
+References:
+
+[1] P. Gács and J. Körner, "Common information is far less than mutual
+information," Problems of Control and Information Theory 2(2):149–162,
+1973.
+
+[2] P. Gács, J. Tromp, and P. M. B. Vitányi, "Algorithmic Statistics,"
+IEEE Transactions on Information Theory 47(6):2443–2463, 2001.
+arXiv:math/0006233.
+
+[3] D. Janzing and B. Schölkopf, "Causal Inference Using the Algorithmic
+Markov Condition," IEEE Transactions on Information Theory
+56(10):5168–5194, 2010. doi:10.1109/TIT.2010.2060095.
+
+[4] E. Sula and M. C. Gastpar, "Common Information Components Analysis,"
+Entropy 23(2):151, 2021. doi:10.3390/e23020151.
+
+[5] F. Pigozzi, A. Goldstein, and M. Levin, "Associative conditioning in
+gene regulatory network models increases integrative causal emergence,"
+Communications Biology 8:1027, 2025. doi:10.1038/s42003-025-08411-2.
+
+[6] G. J. Chaitin, "Toward a mathematical definition of 'life'," in The
+Maximum Entropy Formalism, R. D. Levine and M. Tribus, Eds. Cambridge,
+MA: MIT Press, 1979, pp. 477–498.
+
+

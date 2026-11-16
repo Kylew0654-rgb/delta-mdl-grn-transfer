@@ -1,0 +1,14 @@
+BIO: baseline A->A'=11.297 | strict A->A'=11.297 | strict A->B1=13.097 | strict A->B2=13.258
+
+  SHUFFLED-rate twins (topology-preserving): n=64
+    baseline A->A'               mean=  5.978 max= 28.602 beat bio: 9/64 (bio=11.297)
+    strict A->A'                 mean=  3.920 max= 15.636 beat bio: 6/64 (bio=11.297)
+    strict A->B1 (weak/shifted)  mean=  2.148 max= 14.994 beat bio: 1/64 (bio=13.097)
+    strict A->B2 (random pulses) mean=  2.631 max= 10.962 beat bio: 0/64 (bio=13.258)
+
+  UNIFORM-rate twins (topology-preserving): n=64
+    baseline A->A'               mean=  9.354 max= 15.400 beat bio: 26/64 (bio=11.297)
+    strict A->A'                 mean=  9.341 max= 15.400 beat bio: 26/64 (bio=11.297)
+    strict A->B1 (weak/shifted)  mean=  7.052 max= 15.411 beat bio: 3/64 (bio=13.097)
+    strict A->B2 (random pulses) mean= 10.873 max= 18.471 beat bio: 27/64 (bio=13.258)
+
