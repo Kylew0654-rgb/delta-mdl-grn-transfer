@@ -1,6 +1,6 @@
 Main theoretical backing of the Δ equation and methods: 
 
-The measure. For observables X1, ..., Xn and a candidate shared variable
+The measure Δ: For observables X1, ..., Xn and a candidate shared variable
 α, define
 
     Δ(α) = Σ_i K(X_i) − (K(α) + Σ_i K(X_i | α)).
@@ -15,6 +15,18 @@ each supplies one of its components. Throughout, =+ denotes equality up to
 an additive constant, and ≈ equality up to an additive O(log) term,
 following the conventions of [1, 2].
 
+Δ as stated uses true Kolmogorov complexity and is uncomputable; the
+empirical companion to this note estimates it with binned-entropy plug-in
+codes on train/test splits. Δ(α) is defined for a candidate α; the
+reported numbers use a learned α̂ (first SVD direction, fitted on Train
+only). Because you cannot compute true Kolmogorov complexity directly,
+freezing the SVD direction w, bin edges, and histograms on Train A
+(u=3.5) and testing them on a shifted amplitude regime Test B1 (u=1.2)
+serves as an empirical proxy for structural invariance across regimes. A
+genuine shared structure continues to compress the new regime (13.097 bits
+for biology), whereas a brittle in-regime fit degrades when the input
+amplitude shifts (dropping randomized twins that beat biology down to
+1/64 shuffled and 3/64 uniform).
 
 1. Gács & Körner (1973): the three-part code
 
@@ -75,32 +87,52 @@ at all, maximized by the model minimizing the two-part length K(α) +
 Σ_i K(X_i | α) — the ideal-MDL model.
 
 
+
 3. Janzing & Schölkopf (2010): the causal reading
 
-[3] postulates the algorithmic Markov condition: for observations x_1,
-..., x_n with causal graph G,
+[3] postulates the algorithmic Markov condition (Postulate 5): for
+observations x_1, ..., x_n with causal graph G, each node is
+algorithmically independent of its non-descendants given its parents.
+Equivalently (Theorem 3), the joint complexity decomposes as
 
     K(x_1, ..., x_n) =+ Σ_j K(x_j | pa_j*),
 
-where pa_j are the parents of x_j in G — the algorithmic analogue of
-Reichenbach's common-cause principle, with conditional stochastic
-independence replaced by vanishing conditional algorithmic mutual
-information. (It is a postulate of the framework, Postulate 5, not a
-derived theorem.) For a common cause α — the fork X_i ← α → X_j — the
-condition gives
+where pa_j* is the shortest description of the parents of x_j in G — the
+algorithmic analogue of the causal Markov condition (and, in the two-node
+case, Reichenbach's common-cause principle). For a common cause α — the
+fork X_i ← α → X_j — this gives
 
-    K(X_1, ..., X_n) =+ K(α) + Σ_i K(X_i | α).
+    K(α, X_1, ..., X_n) ≈ K(α) + Σ_i K(X_i | α),
 
-This fixes the meaning of Δ: by the chain rule, K(α) + Σ_i K(X_i | α) ≥+
-K(X_1, ..., X_n) always, so
+dropping the star at the cost of an O(log) term. When α is recoverable
+from the observables themselves (so K(α | X_1, ..., X_n) ≈ 0), the
+left-hand side reduces to K(X_1, ..., X_n). By the chain rule,
+K(α) + Σ_i K(X_i | α) ≥+ K(X_1, ..., X_n) always, so
 
     Δ(α) ≤+ Σ_i K(X_i) − K(X_1, ..., X_n),
 
-with equality exactly when α is sufficient, i.e. when the two-part code
-achieves the joint complexity. The right-hand side is the total algorithmic
-redundancy of the observables; Δ is the part of it that α explains. Note Δ(α) is a property of a candidate α, not a maximum over α: the empirical claim of the project is that a simple learned α attains large out-of-regime transfer Δ on biological networks and not on topology-preserving rate-randomized controls, which is a claim about the data, not a consequence of the condition.
+with equality (up to O(log)) when α both screens off the observables from
+one another and adds no unobservable overhead beyond what is in the data.
+The right-hand side is the total algorithmic redundancy of the
+observables; Δ is the part of it that α explains. Note Δ(α) is a property
+of a candidate α, not a maximum over α: the empirical claim of the project
+is that a simple learned α attains large out-of-regime transfer Δ on
+biological networks and not on topology-preserving rate-randomized
+controls, which is a claim about the data, not a consequence of the
+condition.
 
-Because [3] requires the conditional mechanisms K(X_i | α) to be algorithmically independent of the process generating α, freezing α and its conditional codes on training data and evaluating Δ(α) under an out-of-regime amplitude shift (test B1) directly tests causal invariance—separating a genuine structural common cause that holds across interventions from an in-regime curve fit that collapses when the driving stimulus changes.
+A related principle in [3] (Postulate 7) requires the conditional
+mechanisms P(X_i | α) to be algorithmically independent of the source
+P(α) generating α — echoing Pearl's stability principle that causal
+conditionals stay invariant when the driving input distribution changes.
+Motivated by this, freezing the learned coordinate α̂ and its conditional
+codes on training data and evaluating Δ(α̂) under an out-of-regime
+amplitude shift (test B1) probes whether the extracted shared structure
+holds across interventions, rather than collapsing like an in-regime
+curve fit when the stimulus changes. (Because the ODE network is cyclic
+rather than a DAG and our strict transfer metric also freezes the
+training marginals, this is an empirical test of invariant conditional
+structure rather than a direct test of the Markov condition itself.)
 
 
 Synthesis
@@ -114,12 +146,6 @@ explanatory power, and a common cause's footprint.
 
 
 Some extra details:
-
-Δ as stated uses true Kolmogorov complexity and is uncomputable; the
-empirical companion to this note estimates it with binned-entropy plug-in
-codes on train/test splits. Δ(α) is defined for a candidate α; the
-reported numbers use a learned α̂ (first SVD direction, fitted on Train
-only). Because you cannot compute true Kolmogorov complexity directly, freezing the SVD direction w, bin edges, and conditional histograms on Train A (u=3.5) and testing them on a shifted amplitude regime Test B1 (u=1.2) acts as an empirical substitute for algorithmic sufficiency. A genuine internal program continues to compress the new regime (13.097 bits for biology), whereas a brittle Shannon lookup table fails when the input amplitude shifts (dropping randomized twins that beat biology down to 1/64 shuffled and 3/64 uniform).   
 
 By Sula & Gastpar (2021), the optimal extraction of relaxed Wyner common information for Gaussian statistics is exactly CCA, computed via SVD. We use the top SVD axis of the joint training data as our estimate of the shared continuous source, and validate it by held-out MDL transfer [4].
 
