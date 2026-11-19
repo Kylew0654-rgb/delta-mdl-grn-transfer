@@ -28,6 +28,7 @@ for biology), whereas a brittle in-regime fit degrades when the input
 amplitude shifts (dropping randomized twins that beat biology down to
 1/64 shuffled and 3/64 uniform).
 
+
 1. Gács & Körner (1973): the three-part code
 
 In the introduction of [1] (p. 149), Gács and Körner pose the problem that
@@ -79,13 +80,12 @@ data given the hypothesis.
 model code is K(α) and the data-to-model code is K(X_1, ..., X_n | α). The
 remaining step — factoring the data-to-model code as Σ_i K(X_i | α) — is
 ours, justified by the chain rule for prefix complexity: when the
-components are conditionally independent given α, K(X_1, ..., X_n | α) =+
-Σ_i K(X_i | α) up to logarithmic terms. The baseline Σ_i K(X_i) is the
+components are conditionally independent given α, K(X_1, ..., X_n | α) ≈
+Σ_i K(X_i | α). The baseline Σ_i K(X_i) is the
 unorganized code: each observable described separately, with no shared
 model. Δ is therefore the two-part gain of the shared model over no model
 at all, maximized by the model minimizing the two-part length K(α) +
 Σ_i K(X_i | α) — the ideal-MDL model.
-
 
 
 3. Janzing & Schölkopf (2010): the causal reading
@@ -149,9 +149,20 @@ Some extra details:
 
 By Sula & Gastpar (2021), the optimal extraction of relaxed Wyner common information for Gaussian statistics is exactly CCA, computed via SVD. We use the top SVD axis of the joint training data as our estimate of the shared continuous source, and validate it by held-out MDL transfer [4].
 
+Note that the unconstrained formula admits a trivial loophole: setting
+α = (X_1, ..., X_n) makes every residual K(X_i | α) vanish and hits the
+redundancy ceiling Σ_i K(X_i) − K(X_1, ..., X_n) even on systems with no
+extractable common information — such as the random bipartite graphs of
+Razenshteyn [7], whose typical edges (x, y) have high mutual information
+yet allow no compact shared code with K(α) ≤ I(x : y) to beat separate
+description (Δ ≤ 0). What makes Δ(α̂) a genuine test of common information
+rather than bare joint redundancy is bottlenecking α̂ to a low-complexity
+variable with K(α̂) ≪ K(X_1, ..., X_n), which our 1D SVD coordinate
+(quantized to at most k ≤ 12 states) enforces.
+
 Note on identifiability: Δ(α) is well-defined for any candidate α and any dataset. But when α is learned, α̂ = α̂(X_train), evaluating Δ(α̂) on X_train gives a biased estimate of the source's common information: α̂ was selected using that very data, so the in-sample value is optimistically biased. The train/test split is therefore definitional, not merely hygienic — Δ(α̂) on held-out data is the estimate, because α̂ was frozen before that data was seen. The transfer test extends the same logic across regimes: the new regimes are draws from a changed source, and the topology-preserving control ensembles supply the null distribution for the statistic.
 
-Background: The Δ equation at the center of this repository — Δ = ΣK(Xi) − (K(α) + ΣK(Xi|α)) — was made to model the morphogenetic field, following Michael Levin's research on bioelectric patterning and morphogenesis, using Chaitin's algorithmic-information-theoretic definition of life (Chaitin 1979). Δ quantifies that unity: the compression gained by describing the parts through a shared variable α. The equation predates the gene-network work here. The specific test — measuring Δ on gene regulatory networks against randomized controls — was inspired by Levin's work, in particular Pigozzi, Goldstein & Levin (2025), whose models this repository builds on.
+Background: The Δ equation at the center of this repository — Δ = ΣK(Xi) − (K(α) + ΣK(Xi|α)) — was made to model the morphogenetic field, following Michael Levin's research on bioelectric patterning and morphogenesis, using Chaitin's algorithmic-information-theoretic definition of life (Chaitin 1979) [6]. Δ quantifies that unity: the compression gained by describing the parts through a shared variable α. The equation predates the gene-network work here. The specific test — measuring Δ on gene regulatory networks against randomized controls — was inspired by Levin's work, in particular Pigozzi, Goldstein & Levin (2025) [5], whose models this repository builds on.
 
 
 Randomization: 
@@ -185,4 +196,5 @@ Communications Biology 8:1027, 2025. doi:10.1038/s42003-025-08411-2.
 Maximum Entropy Formalism, R. D. Levine and M. Tribus, Eds. Cambridge,
 MA: MIT Press, 1979, pp. 477–498.
 
-
+[7] I. Razenshteyn, "Common information revisited," arXiv:1104.3207v3
+[cs.IT], 2012.
